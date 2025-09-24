@@ -10,22 +10,115 @@ public class Avoider : MonoBehaviour
     public GameObject objectToAvoid;
     public float range;
     public float speed;
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public bool showGizmos;
+    private Vector3 currentTarget;
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        var sampler = new PoissonDiscSampler(range, range, range);
-        foreach (var point in sampler.Samples())
-        {
-            //do something
-        }
+        
     }
 
     // Update is called once per frame
     void Update()
     {
+        if(objectToAvoid == null)
+        {
+            return;
+        }
         transform.LookAt(objectToAvoid.transform.position);
 
+        float distance = Vector3.Distance(transform.position, objectToAvoid.transform.position);
+
+        if (distance < range)
+        {
+            FindASpot();
+        }
+    }
+
+    // this does not work 
+    void FindASpot()
+    {
+        List<Vector3> candidates = new List<Vector3>();
+        var sampler = new PoissonDiscSampler(range, range, range / 2f);
+
+        foreach (var point in sampler.Samples())
+        {
+            // Convert 2D sampler to 3D point in world space (XZ plane)
+            Vector3 worldPoint = transform.position + new Vector3(point.x, 0, point.y);
+
+            // Skip points too far from the avoider
+            if (Vector3.Distance(transform.position, worldPoint) > range)
+                continue;
+
+            if (NavMesh.SamplePosition(worldPoint, out NavMeshHit hit, 1f, NavMesh.AllAreas)) 
+            {
+                worldPoint = hit.position;
+
+                // Skip points too far
+                if (Vector3.Distance(transform.position, worldPoint) > range) continue;
+
+                // Check if the avoidee (player) has line of sight to this point
+                if (!IsVisible(worldPoint, objectToAvoid.transform.position))
+                {
+                    candidates.Add(worldPoint);
+                }
+            }
+           
+        }
+
+        if (candidates.Count == 0) return;
+
+        // Pick closest valid hiding spot
+        Vector3 bestPoint = candidates[0];
+        float bestDist = Vector3.Distance(transform.position, bestPoint);
+
+        foreach (var c in candidates)
+        {
+            float d = Vector3.Distance(transform.position, c);
+            if (d < bestDist)
+            {
+                bestDist = d;
+                bestPoint = c;
+            }
+        }
+
+        currentTarget = bestPoint;
+        agent.SetDestination(currentTarget);
+    }
+
+    bool IsVisible(Vector3 point, Vector3 origin)
+    {
+        Vector3 dir = point - origin;
+        if (Physics.Raycast(origin, dir.normalized, out RaycastHit hit, dir.magnitude))
+        {
+            // If ray hits the avoider, point is visible
+            if (hit.transform == transform) return true;
+            // If ray hits something else before avoider, not visible
+            return false;
+        }
+        return true;
+    }
+
+    void OnDrawGizmos()
+    {
+        if (!showGizmos) return;
+
+        // Draw chosen target
+        if (currentTarget != Vector3.zero)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawSphere(currentTarget, 0.3f);
+
+            Gizmos.color = Color.yellow;
+            Gizmos.DrawLine(transform.position, currentTarget);
+
+            if (objectToAvoid != null)
+            {
+                Gizmos.color = Color.cyan;
+                Gizmos.DrawLine(objectToAvoid.transform.position, currentTarget);
+            }
+        }
     }
 }
 #if UNITY_EDITOR
