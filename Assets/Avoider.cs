@@ -12,6 +12,7 @@ public class Avoider : MonoBehaviour
     public float speed;
     public bool showGizmos;
     private Vector3 currentTarget;
+    bool moving;
 
     void Start()
     {
@@ -30,9 +31,16 @@ public class Avoider : MonoBehaviour
 
         float distance = Vector3.Distance(transform.position, objectToAvoid.transform.position);
 
-        if (distance < range)
+        if (distance < range && !moving)
         {
+            moving = true;  
             FindASpot();
+           
+        }
+
+        if (agent.remainingDistance <= 0.4f)
+        {
+            moving = false; 
         }
     }
 
@@ -40,30 +48,11 @@ public class Avoider : MonoBehaviour
     void FindASpot()
     {
         List<Vector3> candidates = new List<Vector3>();
-        var sampler = new PoissonDiscSampler(range, range, range / 2f);
+        var sampler = new PoissonDiscSampler(1, 1, 1);
 
         foreach (var point in sampler.Samples())
         {
-            // Convert 2D sampler to 3D point in world space (XZ plane)
-            Vector3 worldPoint = transform.position + new Vector3(point.x, 0, point.y);
-
-            // Skip points too far from the avoider
-            if (Vector3.Distance(transform.position, worldPoint) > range)
-                continue;
-
-            if (NavMesh.SamplePosition(worldPoint, out NavMeshHit hit, 1f, NavMesh.AllAreas)) 
-            {
-                worldPoint = hit.position;
-
-                // Skip points too far
-                if (Vector3.Distance(transform.position, worldPoint) > range) continue;
-
-                // Check if the avoidee (player) has line of sight to this point
-                if (!IsVisible(worldPoint, objectToAvoid.transform.position))
-                {
-                    candidates.Add(worldPoint);
-                }
-            }
+           
            
         }
 
@@ -87,39 +76,7 @@ public class Avoider : MonoBehaviour
         agent.SetDestination(currentTarget);
     }
 
-    bool IsVisible(Vector3 point, Vector3 origin)
-    {
-        Vector3 dir = point - origin;
-        if (Physics.Raycast(origin, dir.normalized, out RaycastHit hit, dir.magnitude))
-        {
-            // If ray hits the avoider, point is visible
-            if (hit.transform == transform) return true;
-            // If ray hits something else before avoider, not visible
-            return false;
-        }
-        return true;
-    }
-
-    void OnDrawGizmos()
-    {
-        if (!showGizmos) return;
-
-        // Draw chosen target
-        if (currentTarget != Vector3.zero)
-        {
-            Gizmos.color = Color.green;
-            Gizmos.DrawSphere(currentTarget, 0.3f);
-
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawLine(transform.position, currentTarget);
-
-            if (objectToAvoid != null)
-            {
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawLine(objectToAvoid.transform.position, currentTarget);
-            }
-        }
-    }
+   
 }
 #if UNITY_EDITOR
 [CustomEditor(typeof(Avoider))]

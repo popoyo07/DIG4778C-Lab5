@@ -926,7 +926,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Avoider
   objectToAvoid: {fileID: 1789185226}
-  range: 5
+  range: 20
   speed: 10
   showGizmos: 1
 --- !u!195 &736342516
