@@ -4,82 +4,203 @@ using UnityEditor;
 using UnityEngine;
 using UnityEngine.AI;
 
+[RequireComponent(typeof(NavMeshAgent))]
 public class Avoider : MonoBehaviour
 {
-    private  NavMeshAgent agent;
+    private NavMeshAgent agent;
     public GameObject objectToAvoid;
-    public float range;
-    public float speed;
-    public bool showGizmos;
-    private Vector3 currentTarget;
-    bool moving;
+    [Range(5f,100f)] public float range = 5f;
+    [Range(1f, 100f)] public float speed = 3.5f;
+    public bool showGizmos = true;
+    [Range(5f, 100f)] public float samplingRadius = 10f;
+    [Range(2f, 10f)] public float pointRadius = 2f;
 
+    private Vector3 currentTarget;
+    bool moving = false;
+    private List<Vector3> candiadates = new List<Vector3>();
+    private List<Vector3> visiblePoints = new List<Vector3>();
+    private List<Vector3> hiddenPoints = new List<Vector3>();
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        
+        if (agent == null)
+        {
+            Debug.LogError("Missing the NavMeshAgent "); 
+        }
     }
 
-    // Update is called once per frame
+
     void Update()
     {
-        if(objectToAvoid == null)
-        {
-            return;
-        }
+        if (objectToAvoid == null || agent == null) return;
+
+        // Always look at player 
         transform.LookAt(objectToAvoid.transform.position);
 
         float distance = Vector3.Distance(transform.position, objectToAvoid.transform.position);
 
-        if (distance < range && !moving)
+        // Check if avoidee is in range and we're not already moving
+        if (distance < range && !moving && theyCanSeeMe(transform.position))
         {
-            moving = true;  
-            FindASpot();
-           
+            moving = true;
+            FindHidingSpot();
         }
 
-        if (agent.remainingDistance <= 0.4f)
+        // Check if we've reached our destination
+        if (moving && agent.remainingDistance <= agent.stoppingDistance + 0.1f)
         {
-            moving = false; 
+            moving = false;
         }
     }
 
-    // this does not work 
-    void FindASpot()
+    void FindHidingSpot()
     {
-        List<Vector3> candidates = new List<Vector3>();
-        var sampler = new PoissonDiscSampler(1, 1, 1);
+        candiadates.Clear();
+
+        // Create sampler around our current position
+        var sampler = new PoissonDiscSampler(samplingRadius, samplingRadius, pointRadius);
 
         foreach (var point in sampler.Samples())
         {
-           
-           
-        }
+            // Convert 2D point to 3D world space 
+            Vector3 worldPoint = transform.position + new Vector3(point.x - samplingRadius * 0.5f, 0, point.y - samplingRadius * 0.5f);
 
-        if (candidates.Count == 0) return;
-
-        // Pick closest valid hiding spot
-        Vector3 bestPoint = candidates[0];
-        float bestDist = Vector3.Distance(transform.position, bestPoint);
-
-        foreach (var c in candidates)
-        {
-            float d = Vector3.Distance(transform.position, c);
-            if (d < bestDist)
+            // Check if this point is not visible to the avoidee
+            if (!theyCanSeeMe(worldPoint))
             {
-                bestDist = d;
-                bestPoint = c;
+                // Check if the point is on NavMesh
+                if (pointInNavMesh(worldPoint))
+                {
+                    candiadates.Add(worldPoint);
+                }
+            }
+
+        }
+        Vector3 bestPoint = candiadates[0];
+        float bestDistance = Vector3.Distance(transform.position, bestPoint);
+        foreach(var point in candiadates)
+        {
+            float dist = Vector3.Distance(transform.position, point);
+            if (dist < bestDistance)
+            {
+                bestDistance = dist;
+                bestPoint = point;
             }
         }
 
         currentTarget = bestPoint;
         agent.SetDestination(currentTarget);
+
     }
 
-   
+    // set to true if point is in NavMesh
+    bool pointInNavMesh(Vector3 point, float maxDistance = 1f)
+    {
+        NavMeshHit hit;
+        return NavMesh.SamplePosition(point, out hit, maxDistance, NavMesh.AllAreas);
+    }
+
+    // check if can be seen from said point 
+    bool theyCanSeeMe(Vector3 point)
+    {
+        if (objectToAvoid == null) return false;
+
+        Vector3 directionToPoint = point - objectToAvoid.transform.position;
+        Ray ray = new Ray(objectToAvoid.transform.position, directionToPoint.normalized);
+        RaycastHit hit;
+
+        float maxDistance = directionToPoint.magnitude;
+
+        // Use physics raycast to check for collision with other game objects 
+        if (Physics.Raycast(ray, out hit, maxDistance))
+        {
+            // If the ray hits something other than the avoider or avoidee, the point is not visible
+            return hit.collider.gameObject == gameObject || hit.collider.gameObject == objectToAvoid;
+        }
+
+        // If nothing was hit, the point is visible
+        return true;
+    }
+
+    void OnDrawGizmos()
+    {
+        if (!showGizmos) return;
+
+        // Draw avoidance range
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, range);
+
+        // Draw line of sight to avoidee
+        if (objectToAvoid != null)
+        {
+            bool isVisible = theyCanSeeMe(transform.position);
+            // change set color depending if it is visible or not 
+            Gizmos.color = isVisible ? Color.red : Color.green;
+            Gizmos.DrawLine(transform.position, objectToAvoid.transform.position);
+
+
+            // Draw small sphere at avoidee position for clarity
+            Gizmos.color = Color.magenta;
+            Gizmos.DrawWireSphere(objectToAvoid.transform.position, 0.3f);
+        }
+        // Draw current target if moving
+        if (moving)
+        {
+            Gizmos.color = Color.cyan;
+            Gizmos.DrawLine(transform.position, currentTarget);
+            Gizmos.DrawSphere(currentTarget, 0.3f);
+        }
+
+        // Draw visible points (points that can be seen by avoidee)
+        Gizmos.color = Color.red;
+        foreach (var point in visiblePoints)
+        {
+            Gizmos.DrawWireSphere(point, 0.15f);
+            if (objectToAvoid != null)
+            {
+                Gizmos.DrawLine(objectToAvoid.transform.position, point);
+            }
+        }
+
+        // Draw hidden points (valid hiding spots)
+        Gizmos.color = Color.green;
+        foreach (var point in hiddenPoints)
+        {
+            Gizmos.DrawWireSphere(point, 0.2f);
+            if (objectToAvoid != null)
+            {
+                // Draw dashed line to show these are hidden
+                DrawDashedLine(objectToAvoid.transform.position, point, 0.5f);
+            }
+        }
+
+        // Draw sampling area
+        Gizmos.color = new Color(1, 1, 0, 0.1f);
+        Gizmos.DrawWireCube(transform.position, new Vector3(samplingRadius, 0.1f, samplingRadius));
+    }
+
+    void DrawDashedLine(Vector3 start, Vector3 end, float dashLength)
+    {
+        Vector3 direction = (end - start).normalized;
+        float distance = Vector3.Distance(start, end);
+        int segments = Mathf.RoundToInt(distance / dashLength);
+
+        for (int i = 0; i < segments; i += 2)
+        {
+            Vector3 segmentStart = start + direction * (i * dashLength);
+            Vector3 segmentEnd = start + direction * ((i + 1) * dashLength);
+
+            // Clamp the end point to not exceed the total distance
+            if (Vector3.Distance(start, segmentEnd) > distance)
+                segmentEnd = end;
+
+            Gizmos.DrawLine(segmentStart, segmentEnd);
+        }
+    }
 }
+
 #if UNITY_EDITOR
-[CustomEditor(typeof(Avoider))]
+    [CustomEditor(typeof(Avoider))]
 public class AvoiderEditor : Editor
 {
 
