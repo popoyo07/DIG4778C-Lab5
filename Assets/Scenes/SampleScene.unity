@@ -1277,9 +1277,9 @@ GameObject:
   - component: {fileID: 736342519}
   - component: {fileID: 736342518}
   - component: {fileID: 736342517}
-  - component: {fileID: 736342523}
   - component: {fileID: 736342521}
   - component: {fileID: 736342522}
+  - component: {fileID: 736342523}
   m_Layer: 0
   m_Name: AI
   m_TagString: Untagged
@@ -1433,15 +1433,15 @@ MonoBehaviour:
   m_GameObject: {fileID: 736342514}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84f315ca9d589ac42af5fb81d6ea7f4d, type: 3}
+  m_Script: {fileID: -1931998008, guid: f0d2f22c3e54b344d911faa9c7abc6b7, type: 3}
   m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Avoider
+  m_EditorClassIdentifier: FinalAvoider.dll::FinalAvoider.Avoider
   objectToAvoid: {fileID: 1789185226}
-  range: 10
-  speed: 3.5
+  range: 13.1
+  speed: 14
   showGizmos: 1
-  samplingRadius: 10
-  pointRadius: 2
+  samplingRadius: 18.6
+  pointRadius: 3
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1855,7 +1855,7 @@ Transform:
   m_GameObject: {fileID: 1789185226}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 5.39, y: 1.15, z: 0.70389}
+  m_LocalPosition: {x: 3.17, y: 1.15, z: -8.4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

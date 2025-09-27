@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 [RequireComponent(typeof(NavMeshAgent))]
-public class Avoider : MonoBehaviour
+public class AvoiderTest : MonoBehaviour
 {
     private NavMeshAgent agent;
     public GameObject objectToAvoid;
@@ -200,14 +200,14 @@ public class Avoider : MonoBehaviour
 }
 
 #if UNITY_EDITOR
-    [CustomEditor(typeof(Avoider))]
+    [CustomEditor(typeof(AvoiderTest))]
 public class AvoiderEditor : Editor
 {
 
     public override void OnInspectorGUI()
     {
-       
-        Avoider avoider = (Avoider)target;
+
+        AvoiderTest avoider = (AvoiderTest)target;
 
         DrawDefaultInspector();
 
