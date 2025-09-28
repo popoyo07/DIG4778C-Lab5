@@ -1375,7 +1375,7 @@ Transform:
   m_GameObject: {fileID: 736342514}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 8.83, y: 1.06, z: -8.36}
+  m_LocalPosition: {x: 7, y: 1.06, z: -2.66}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1437,10 +1437,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::AvoiderTest
   objectToAvoid: {fileID: 1789185226}
-  range: 8
-  speed: 10.5
+  range: 5
+  speed: 3.5
   showGizmos: 1
-  samplingRadius: 12
+  samplingRadius: 10
   pointRadius: 2
 --- !u!1 &832575517
 GameObject:
@@ -1761,7 +1761,6 @@ GameObject:
   - component: {fileID: 1789185227}
   - component: {fileID: 1789185231}
   - component: {fileID: 1789185233}
-  - component: {fileID: 1789185232}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1883,24 +1882,6 @@ MonoBehaviour:
   m_IgnoreFromBuild: 1
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffff
---- !u!114 &1789185232
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1789185226}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 84f315ca9d589ac42af5fb81d6ea7f4d, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::AvoiderTest
-  objectToAvoid: {fileID: 736342514}
-  range: 5
-  speed: 3.5
-  showGizmos: 1
-  samplingRadius: 10
-  pointRadius: 2
 --- !u!195 &1789185233
 NavMeshAgent:
   m_ObjectHideFlags: 0
