@@ -1432,7 +1432,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 736342514}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7810034d3a1b53d428501db427be5446, type: 3}
   m_Name: 
@@ -1450,7 +1450,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 736342514}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: -1931998008, guid: f0d2f22c3e54b344d911faa9c7abc6b7, type: 3}
   m_Name: 
@@ -1458,7 +1458,7 @@ MonoBehaviour:
   objectToAvoid: {fileID: 1789185226}
   range: 5
   speed: 3.5
-  showGizmos: 1
+  showGizmos: 0
   samplingRadius: 10
   pointRadius: 2
 --- !u!1 &832575517

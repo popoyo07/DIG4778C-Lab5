@@ -19,11 +19,6 @@ public class AvodierTest2 : MonoBehaviour
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
-        if (agent == null)
-        {
-            Debug.LogError("Missing NavMeshAgent!");
-            return;
-        }
 
         avoiderCore = new AvoiderCore(gameObject, agent)
         {
