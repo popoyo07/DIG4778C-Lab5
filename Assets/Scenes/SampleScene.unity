@@ -1279,7 +1279,8 @@ GameObject:
   - component: {fileID: 736342517}
   - component: {fileID: 736342521}
   - component: {fileID: 736342522}
-  - component: {fileID: 736342523}
+  - component: {fileID: 736342525}
+  - component: {fileID: 736342524}
   m_Layer: 0
   m_Name: AI
   m_TagString: Untagged
@@ -1375,7 +1376,7 @@ Transform:
   m_GameObject: {fileID: 736342514}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.97, y: 1.06, z: -7.36}
+  m_LocalPosition: {x: 2.56, y: 1.06, z: -4.38}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -1424,7 +1425,25 @@ NavMeshAgent:
   m_BaseOffset: 1
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
---- !u!114 &736342523
+--- !u!114 &736342524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 736342514}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7810034d3a1b53d428501db427be5446, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::AvodierTest2
+  objectToAvoid: {fileID: 1789185226}
+  range: 5
+  speed: 3.5
+  showGizmos: 0
+  samplingRadius: 10
+  pointRadius: 2
+--- !u!114 &736342525
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -1437,11 +1456,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: FinalAvoider.dll::FinalAvoider.Avoider
   objectToAvoid: {fileID: 1789185226}
-  range: 13.1
-  speed: 14
+  range: 5
+  speed: 3.5
   showGizmos: 1
-  samplingRadius: 18.6
-  pointRadius: 3
+  samplingRadius: 10
+  pointRadius: 2
 --- !u!1 &832575517
 GameObject:
   m_ObjectHideFlags: 0
@@ -1760,6 +1779,7 @@ GameObject:
   - component: {fileID: 1789185228}
   - component: {fileID: 1789185227}
   - component: {fileID: 1789185231}
+  - component: {fileID: 1789185233}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1881,6 +1901,28 @@ MonoBehaviour:
   m_IgnoreFromBuild: 1
   m_ApplyToChildren: 1
   m_AffectedAgents: ffffffff
+--- !u!195 &1789185233
+NavMeshAgent:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1789185226}
+  m_Enabled: 1
+  m_AgentTypeID: 0
+  m_Radius: 0.5
+  m_Speed: 3.5
+  m_Acceleration: 8
+  avoidancePriority: 50
+  m_AngularSpeed: 120
+  m_StoppingDistance: 0
+  m_AutoTraverseOffMeshLink: 1
+  m_AutoBraking: 1
+  m_AutoRepath: 1
+  m_Height: 2
+  m_BaseOffset: 1
+  m_WalkableMask: 4294967295
+  m_ObstacleAvoidanceType: 4
 --- !u!1 &1928290071
 GameObject:
   m_ObjectHideFlags: 0
