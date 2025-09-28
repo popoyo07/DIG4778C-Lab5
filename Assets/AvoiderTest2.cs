@@ -1,10 +1,6 @@
 using UnityEngine;
 using UnityEngine.AI;
-using static UnityEngine.UI.GridLayoutGroup;
-
-#if UNITY_EDITOR
 using UnityEditor;
-#endif
 using Avoider;
 
 [RequireComponent(typeof(NavMeshAgent))]
@@ -102,15 +98,15 @@ public class AvodierTest2 : MonoBehaviour
     }
 }
 
-/*#if UNITY_EDITOR
-[CustomEditor(typeof(AvoiderComponent))]
+#if UNITY_EDITOR
+[CustomEditor(typeof(AvodierTest2))]
 public class AvoiderComponentEditor : Editor
 {
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
 
-        AvoiderComponent avoider = (AvoiderComponent)target;
+        AvodierTest2 avoider = (AvodierTest2)target;
 
         if (avoider.GetComponent<NavMeshAgent>() == null)
             EditorGUILayout.HelpBox("GameObject needs a NavMeshAgent.", MessageType.Warning);
@@ -122,4 +118,4 @@ public class AvoiderComponentEditor : Editor
             EditorGUILayout.HelpBox("Speed must be greater than 0.", MessageType.Warning);
     }
 }
-#endif*/
+#endif
