@@ -7,11 +7,11 @@ using Avoider;
 public class AvodierTest2 : MonoBehaviour
 {
     public GameObject objectToAvoid;
-    [Range(5f, 100f)] public float range = 5f;
-    [Range(1f, 100f)] public float speed = 3.5f;
+    [Range(5f, 100f)] public float range;
+    [Range(1f, 100f)] public float speed;
     public bool showGizmos = true;
-    [Range(5f, 100f)] public float samplingRadius = 10f;
-    [Range(2f, 10f)] public float pointRadius = 2f;
+    [Range(5f, 100f)] public float samplingRadius;
+    [Range(2f, 10f)] public float pointRadius;
 
     private AvoiderCore avoiderCore;
     private NavMeshAgent agent;
@@ -31,7 +31,8 @@ public class AvodierTest2 : MonoBehaviour
             Range = range,
             Speed = speed,
             SamplingRadius = samplingRadius,
-            PointRadius = pointRadius
+            PointRadius = pointRadius,
+            ShowGizmos = showGizmos
         };
     }
 
@@ -40,60 +41,21 @@ public class AvodierTest2 : MonoBehaviour
         if (avoiderCore != null)
         {
             avoiderCore.ObjectToAvoid = objectToAvoid;
+            avoiderCore.Range = range;
+            avoiderCore.Speed = speed;
+            avoiderCore.SamplingRadius = samplingRadius;
+            avoiderCore.PointRadius = pointRadius;
+            avoiderCore.ShowGizmos = showGizmos;
+
             avoiderCore.Update();
         }
     }
 
     void OnDrawGizmos()
     {
-        if (!showGizmos || objectToAvoid == null) return;
-
-        // Draw avoidance range
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(transform.position, range);
-
-        // Draw line to avoidee
-        Gizmos.color = Color.red;
-        Gizmos.DrawLine(transform.position, objectToAvoid.transform.position);
-        Gizmos.color = Color.magenta;
-        Gizmos.DrawWireSphere(objectToAvoid.transform.position, 0.3f);
-
         if (avoiderCore != null)
         {
-            // Draw current target
-            if (avoiderCore.Moving)
-            {
-                Gizmos.color = Color.cyan;
-                Gizmos.DrawLine(transform.position, avoiderCore.CurrentTarget);
-                Gizmos.DrawSphere(avoiderCore.CurrentTarget, 0.3f);
-            }
-
-            // Draw hidden points
-            Gizmos.color = Color.green;
-            foreach (var point in avoiderCore.HiddenPoints)
-            {
-                Gizmos.DrawWireSphere(point, 0.2f);
-                Gizmos.DrawLine(objectToAvoid.transform.position, point);
-            }
-
-            if (avoiderCore.CurrentTarget != Vector3.zero)
-            {
-                Gizmos.color = Color.purple;
-                Gizmos.DrawSphere(avoiderCore.CurrentTarget, 0.25f);
-                Gizmos.DrawLine(transform.position, avoiderCore.CurrentTarget);
-            }
-
-            // Draw visible points
-            Gizmos.color = Color.red;
-            foreach (var point in avoiderCore.VisiblePoints)
-            {
-                Gizmos.DrawWireSphere(point, 0.15f);
-                Gizmos.DrawLine(objectToAvoid.transform.position, point);
-            }
-
-            // Draw sampling area
-            Gizmos.color = Color.yellow;
-            Gizmos.DrawWireCube(transform.position, new Vector3(samplingRadius, 0.1f, samplingRadius));
+            avoiderCore.DrawGizmos();
         }
     }
 }
